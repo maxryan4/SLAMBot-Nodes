@@ -1,0 +1,3 @@
+[submodule "src/external/ldlidar_ros2"]
+	path = src/external/ldlidar_ros2
+	url = https://github.com/maxryan4/ldlidar_ros2
