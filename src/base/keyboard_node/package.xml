@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>keyboard_control</name>
+  <name>keyboard_node</name>
   <version>0.0.1</version>
   <description>Keyboard teleop node that publishes motor commands from WASD input.</description>
 

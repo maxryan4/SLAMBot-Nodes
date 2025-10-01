@@ -19,7 +19,7 @@ setup(
     license='TODO: License declaration',
     entry_points={
         'console_scripts': [
-             'keyboard_node = keyboard_control.keyboard_node:main',
+             'keyboard_node = keyboard_node.keyboard_node:main',
         ],
     },
 )
