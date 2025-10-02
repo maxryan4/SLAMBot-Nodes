@@ -1,53 +1,52 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-import RPi.GPIO as GPIO
+import lgpio
 import time
 
-# GPIO pins
+# GPIO pins (BCM mode)
 LEFT_FORWARD = 5
 LEFT_BACKWARD = 6
 RIGHT_FORWARD = 13
 RIGHT_BACKWARD = 26
 
-# Motor setup
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
-GPIO.setup(LEFT_FORWARD, GPIO.OUT)
-GPIO.setup(LEFT_BACKWARD, GPIO.OUT)
-GPIO.setup(RIGHT_FORWARD, GPIO.OUT)
-GPIO.setup(RIGHT_BACKWARD, GPIO.OUT)
+# Open GPIO chip
+CHIP = lgpio.gpiochip_open(0)
+
+# Setup pins as outputs
+for pin in [LEFT_FORWARD, LEFT_BACKWARD, RIGHT_FORWARD, RIGHT_BACKWARD]:
+    lgpio.gpio_claim_output(CHIP, pin)
 
 # Helper functions
 def stop_motors():
-    GPIO.output(LEFT_FORWARD, False)
-    GPIO.output(LEFT_BACKWARD, False)
-    GPIO.output(RIGHT_FORWARD, False)
-    GPIO.output(RIGHT_BACKWARD, False)
+    lgpio.gpio_write(CHIP, LEFT_FORWARD, 0)
+    lgpio.gpio_write(CHIP, LEFT_BACKWARD, 0)
+    lgpio.gpio_write(CHIP, RIGHT_FORWARD, 0)
+    lgpio.gpio_write(CHIP, RIGHT_BACKWARD, 0)
 
 def move_forward():
-    GPIO.output(LEFT_FORWARD, True)
-    GPIO.output(LEFT_BACKWARD, False)
-    GPIO.output(RIGHT_FORWARD, True)
-    GPIO.output(RIGHT_BACKWARD, False)
+    lgpio.gpio_write(CHIP, LEFT_FORWARD, 1)
+    lgpio.gpio_write(CHIP, LEFT_BACKWARD, 0)
+    lgpio.gpio_write(CHIP, RIGHT_FORWARD, 1)
+    lgpio.gpio_write(CHIP, RIGHT_BACKWARD, 0)
 
 def move_backward():
-    GPIO.output(LEFT_FORWARD, False)
-    GPIO.output(LEFT_BACKWARD, True)
-    GPIO.output(RIGHT_FORWARD, False)
-    GPIO.output(RIGHT_BACKWARD, True)
+    lgpio.gpio_write(CHIP, LEFT_FORWARD, 0)
+    lgpio.gpio_write(CHIP, LEFT_BACKWARD, 1)
+    lgpio.gpio_write(CHIP, RIGHT_FORWARD, 0)
+    lgpio.gpio_write(CHIP, RIGHT_BACKWARD, 1)
 
 def turn_left():
-    GPIO.output(LEFT_FORWARD, False)
-    GPIO.output(LEFT_BACKWARD, True)   # Left motor backward
-    GPIO.output(RIGHT_FORWARD, True)   # Right motor forward
-    GPIO.output(RIGHT_BACKWARD, False)
+    lgpio.gpio_write(CHIP, LEFT_FORWARD, 0)
+    lgpio.gpio_write(CHIP, LEFT_BACKWARD, 1)   # Left motor backward
+    lgpio.gpio_write(CHIP, RIGHT_FORWARD, 1)   # Right motor forward
+    lgpio.gpio_write(CHIP, RIGHT_BACKWARD, 0)
 
 def turn_right():
-    GPIO.output(LEFT_FORWARD, True)    # Left motor forward
-    GPIO.output(LEFT_BACKWARD, False)
-    GPIO.output(RIGHT_FORWARD, False)
-    GPIO.output(RIGHT_BACKWARD, True)  # Right motor backward
+    lgpio.gpio_write(CHIP, LEFT_FORWARD, 1)    # Left motor forward
+    lgpio.gpio_write(CHIP, LEFT_BACKWARD, 0)
+    lgpio.gpio_write(CHIP, RIGHT_FORWARD, 0)
+    lgpio.gpio_write(CHIP, RIGHT_BACKWARD, 1)  # Right motor backward
 
 # ROS 2 Node
 class MotorNode(Node):
@@ -87,7 +86,7 @@ def main(args=None):
         pass
     finally:
         stop_motors()
-        GPIO.cleanup()
+        lgpio.gpiochip_close(CHIP)   # release GPIOs
         node.destroy_node()
         rclpy.shutdown()
 
