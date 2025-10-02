@@ -17,28 +17,47 @@ class KeyboardNode(Node):
             'd': 'right',
         }
 
-        self.get_logger().info("Keyboard teleop started. Use WASD keys to drive. Press ESC to quit.")
+        self.current_command = ""  # Track what’s being held
+
+        self.get_logger().info("Keyboard teleop started. Hold WASD keys to drive. Release to stop. Press ESC to quit.")
 
         # Start listening for key events
-        self.listener = keyboard.Listener(on_press=self.on_press)
+        self.listener = keyboard.Listener(
+            on_press=self.on_press,
+            on_release=self.on_release
+        )
         self.listener.start()
 
     def on_press(self, key):
         try:
             if key.char in self.key_mapping:
                 command = self.key_mapping[key.char]
-                self.publish_command(command)
+                if command != self.current_command:  # only update if changed
+                    self.current_command = command
+                    self.publish_command(command)
         except AttributeError:
-            # Handle special keys (e.g., ESC to stop)
             if key == keyboard.Key.esc:
                 self.get_logger().info("ESC pressed. Stopping teleop.")
                 rclpy.shutdown()
+
+    def on_release(self, key):
+        try:
+            if key.char in self.key_mapping:
+                # Key released → send blank string
+                if self.current_command != "":
+                    self.current_command = ""
+                    self.publish_command("")
+        except AttributeError:
+            pass
 
     def publish_command(self, command: str):
         msg = String()
         msg.data = command
         self.publisher_.publish(msg)
-        self.get_logger().info(f"Published command: {command}")
+        if command == "":
+            self.get_logger().info("Published stop command (blank)")
+        else:
+            self.get_logger().info(f"Published command: {command}")
 
 
 def main(args=None):
