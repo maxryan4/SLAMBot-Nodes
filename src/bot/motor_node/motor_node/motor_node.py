@@ -27,26 +27,26 @@ def stop_motors():
 def move_forward():
     lgpio.gpio_write(CHIP, LEFT_FORWARD, 1)
     lgpio.gpio_write(CHIP, LEFT_BACKWARD, 0)
-    lgpio.gpio_write(CHIP, RIGHT_FORWARD, 1)
-    lgpio.gpio_write(CHIP, RIGHT_BACKWARD, 0)
+    lgpio.gpio_write(CHIP, RIGHT_FORWARD, 0)
+    lgpio.gpio_write(CHIP, RIGHT_BACKWARD, 1)
 
 def move_backward():
     lgpio.gpio_write(CHIP, LEFT_FORWARD, 0)
     lgpio.gpio_write(CHIP, LEFT_BACKWARD, 1)
-    lgpio.gpio_write(CHIP, RIGHT_FORWARD, 0)
-    lgpio.gpio_write(CHIP, RIGHT_BACKWARD, 1)
+    lgpio.gpio_write(CHIP, RIGHT_FORWARD, 1)
+    lgpio.gpio_write(CHIP, RIGHT_BACKWARD, 0)
 
 def turn_left():
-    lgpio.gpio_write(CHIP, LEFT_FORWARD, 0)
-    lgpio.gpio_write(CHIP, LEFT_BACKWARD, 1)   # Left motor backward
-    lgpio.gpio_write(CHIP, RIGHT_FORWARD, 1)   # Right motor forward
+    lgpio.gpio_write(CHIP, LEFT_FORWARD, 1)
+    lgpio.gpio_write(CHIP, LEFT_BACKWARD, 0)
+    lgpio.gpio_write(CHIP, RIGHT_FORWARD, 1)
     lgpio.gpio_write(CHIP, RIGHT_BACKWARD, 0)
 
 def turn_right():
-    lgpio.gpio_write(CHIP, LEFT_FORWARD, 1)    # Left motor forward
-    lgpio.gpio_write(CHIP, LEFT_BACKWARD, 0)
+    lgpio.gpio_write(CHIP, LEFT_FORWARD, 0)
+    lgpio.gpio_write(CHIP, LEFT_BACKWARD, 1)
     lgpio.gpio_write(CHIP, RIGHT_FORWARD, 0)
-    lgpio.gpio_write(CHIP, RIGHT_BACKWARD, 1)  # Right motor backward
+    lgpio.gpio_write(CHIP, RIGHT_BACKWARD, 1)
 
 # ROS 2 Node
 class MotorNode(Node):
