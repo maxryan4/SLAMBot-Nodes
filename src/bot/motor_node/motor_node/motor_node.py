@@ -39,15 +39,15 @@ def move_backward():
 
 def turn_left():
     GPIO.output(LEFT_FORWARD, False)
-    GPIO.output(LEFT_BACKWARD, True)
-    GPIO.output(RIGHT_FORWARD, True)
+    GPIO.output(LEFT_BACKWARD, True)   # Left motor backward
+    GPIO.output(RIGHT_FORWARD, True)   # Right motor forward
     GPIO.output(RIGHT_BACKWARD, False)
 
 def turn_right():
-    GPIO.output(LEFT_FORWARD, True)
+    GPIO.output(LEFT_FORWARD, True)    # Left motor forward
     GPIO.output(LEFT_BACKWARD, False)
     GPIO.output(RIGHT_FORWARD, False)
-    GPIO.output(RIGHT_BACKWARD, True)
+    GPIO.output(RIGHT_BACKWARD, True)  # Right motor backward
 
 # ROS 2 Node
 class MotorNode(Node):
